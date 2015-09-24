@@ -1,38 +1,36 @@
 #!/usr/bin/env python
 
-import errno
 import os
 import sys
 
 repository_root = '/var/opt/gitlab/git-data/repositories'
 
 if len(sys.argv) >= 2 and sys.argv[1] == 'config':
-	print('graph_title GitLab Repository Count')
-	print('graph_vlabel Repository Count')
-	print('graph_args -l 0')
-	print('graph_category gitlab')
-	print('repo_count.label Repository Count')
-	print('repo_count.draw AREA')
-	print('wiki_count.label Wiki Count')
-	print('wiki_count.draw STACK')
-	sys.exit(0)
+    print('graph_title GitLab Repository Count')
+    print('graph_vlabel Repository Count')
+    print('graph_args -l 0')
+    print('graph_category gitlab')
+    print('repo_count.label Repository Count')
+    print('repo_count.draw AREA')
+    print('wiki_count.label Wiki Count')
+    print('wiki_count.draw STACK')
+    sys.exit(0)
 
 repo_count = 0
 wiki_count = 0
 
 try:
-	namespaces = os.listdir(repository_root)
-	for namespace in namespaces:
-		repos = os.listdir(repository_root + '/' + namespace)
-		for repo in repos:
-			if repo.endswith('.wiki.git'):
-				wiki_count += 1
-			elif repo.endswith('.git'):
-				repo_count += 1
+    namespaces = os.listdir(repository_root)
+    for namespace in namespaces:
+        repos = os.listdir(repository_root + '/' + namespace)
+        for repo in repos:
+            if repo.endswith('.wiki.git'):
+                wiki_count += 1
+            elif repo.endswith('.git'):
+                repo_count += 1
 except OSError as e:
-	print(e)
-	sys.exit(1)
+    print(e)
+    sys.exit(1)
 
 print('repo_count.value ' + str(repo_count))
 print('wiki_count.value ' + str(wiki_count))
-
