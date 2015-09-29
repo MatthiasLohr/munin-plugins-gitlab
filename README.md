@@ -18,7 +18,7 @@ activate. Please take a look at the plugin specific documentation.
 
 ## Plugins ##
 
-### gitlab_repo_count ###
+### gitlab_total_repo_count ###
 
 Shows a global count of repositories, divided into code and wiki repositories.
 
