@@ -23,3 +23,11 @@ activate. Please take a look at the plugin specific documentation.
 Shows a global count of repositories, divided into code and wiki repositories.
 
 No custom configuration.
+
+
+### gitlab_total_repo_size ###
+
+Shows the size of all your repositories, divided into code and wiki repositories.
+
+No custom configuration.
+
