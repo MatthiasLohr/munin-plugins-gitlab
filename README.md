@@ -11,6 +11,7 @@ and copy+paste the following lines:
 ```
 [gitlab_*]
 user git
+env.gitlab_dir /var/opt/gitlab    # optional, defaults to GitLab omnibus package setup directory
 ```
 2. Change your directory to ```/etc/munin/plugins```. Create symlinks for each plugin (```ln -s```) which you want to
 activate. Please take a look at the plugin specific documentation.
