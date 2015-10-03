@@ -19,6 +19,7 @@ class GitLabInstance(object):
 
     def get_db_connection(self):
         connection = psycopg2.connect(host=self.get_postgresql_dir(), user='gitlab', database='gitlabhq_production')
+        return connection
 
 
 def get_gitlab_instance():
