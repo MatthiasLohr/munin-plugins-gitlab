@@ -16,7 +16,9 @@ and copy+paste the following lines:
 ```
 [gitlab_*]
 user git
-env.gitlab_dir /var/opt/gitlab    # optional, defaults to GitLab omnibus package setup directory
+#env.gitlab_dir /var/opt/gitlab    # optional, defaults to GitLab omnibus package setup directory
+#env.db_engine postgresql          # optional, defaults to postgres, valid values: postgresql. mysql
+#env.db_dsn host=/var/opt/gitlab/postgresql user=gitlab dbname=gitlabhq_production  # optional, defaults to GitLab omnibus database
 ```
 2. Change your directory to ```/etc/munin/plugins```. Create symlinks for each plugin (```ln -s```) which you want to
 activate. Please take a look at the plugin specific documentation.
@@ -24,18 +26,11 @@ activate. Please take a look at the plugin specific documentation.
 
 ## Plugins ##
 
-### gitlab_total_repo_count ###
+### Plugin configuration ###
 
-Shows a global count of repositories, divided into code and wiki repositories.
-
-No custom configuration.
+All plugins will use the default omnibus gitlab setup configuration. You can customize the behaviour with the following parameters:
 
 
-### gitlab_total_repo_size ###
-
-Shows the size of all your repositories, divided into code and wiki repositories.
-
-No custom configuration.
 
 
 ## Further Monitoring ##

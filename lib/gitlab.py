@@ -1,6 +1,5 @@
 
 import os
-import psycopg2
 
 
 class GitLabInstance(object):
@@ -18,7 +17,18 @@ class GitLabInstance(object):
         return os.path.join(self.gitlab_dir, 'postgresql')
 
     def get_db_connection(self):
-        connection = psycopg2.connect(host=self.get_postgresql_dir(), user='gitlab', database='gitlabhq_production')
+        db_engine = os.environ.get('db_engine')
+        if db_engine == None:
+            db_engine = 'postgresql'
+        dsn = os.environ.get('db_dsn')
+        if dsn == None:
+            dsn = 'host=' + self.get_postgresql_dir() + ' user=gitlab dbname=gitlabhq_production'
+        if db_engine == 'postgresql':
+            import psycopg2
+            connection = psycopg2.connect(dsn)
+        elif db_engine == 'mysql':
+            import MySQLdb
+            connection = MySQLdb.connect(dsn)
         return connection
 
 
