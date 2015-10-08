@@ -21,7 +21,7 @@ gitlab = get_gitlab_instance()
 db = gitlab.get_db_connection()
 
 cursor = db.cursor()
-cursor.execute("SELECT COUNT(*) FROM gitlab.issues WHERE state = 'opened'")
+cursor.execute("SELECT COUNT(*) FROM gitlab.issues")
 count_opened = cursor.fetchone()[0]
 cursor.close()
 
