@@ -12,9 +12,11 @@ if len(sys.argv) >= 2 and sys.argv[1] == 'config':
     print('count_opened.label opened issues')
     print('count_opened.type DERIVE')
     print('count_opened.draw AREA')
+    print('count_opened.colour 00FF00')
     print('count_closed.label closed issues')
     print('count_closed.type DERIVE')
     print('count_closed.draw STACK')
+    print('count_closed.colour FF0000')
     sys.exit(0)
 
 gitlab = get_gitlab_instance()
