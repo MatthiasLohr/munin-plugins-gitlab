@@ -4,7 +4,7 @@
 This is a collection of plugins for monitoring your [GitLab](http://www.gitlab.com/) instance with
 [Munin](http://munin-monitoring.org/).
 
-These plugins is developed for and tested with GitLab versions >= 8.0.0.
+These plugins are developed for and tested with GitLab versions >= 8.0.0.
 Maybe some plugins may work with older GitLab instances, but there's no
 support for occuring bugs or errors.
 
