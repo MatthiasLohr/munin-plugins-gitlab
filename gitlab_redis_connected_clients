@@ -1,0 +1,24 @@
+#!/usr/bin/env python
+
+# inspired by the redis munin plugin found at
+# http://munin-monitoring.org/browser/munin-contrib/plugins/redis/redis_,
+# written 2009 by Gleb Voronich <http://stanly.net.ua/>
+
+from lib import get_gitlab_instance
+import sys
+
+
+gitlab = get_gitlab_instance()
+
+if len(sys.argv) >= 2 and sys.argv[1] == 'config':
+    print('graph_title Redis: Connected clients')
+    print('graph_vlabel Connected clients')
+    print('graph_category gitlab')
+    print('graph_args -l 0')
+    print('connected_clients.line ' + gitlab.get_redis_max_clients() + ':ff0000:Limit')
+    print('connected_clients.label connected clients')
+    sys.exit(0)
+
+redis_info = gitlab.get_redis_info()
+print('connected_clients.value ' + redis_info['connected_clients'])
+
