@@ -22,7 +22,7 @@ user git
 #env.db_engine postgresql          # optional, defaults to postgres, valid values: postgresql. mysql
 #env.db_dsn host=/var/opt/gitlab/postgresql user=gitlab dbname=gitlabhq_production  # optional, defaults to GitLab omnibus database
 
-## using y MySQL database
+## using a MySQL database
 #env.db_engine mysql
 #env.db_dsn host=localhost user=gitlab db=gitlabhq_production
 ```
