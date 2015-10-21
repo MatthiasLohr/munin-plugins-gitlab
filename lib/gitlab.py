@@ -28,7 +28,10 @@ class GitLabInstance(object):
             connection = psycopg2.connect(dsn)
         elif db_engine == 'mysql':
             import MySQLdb
-            connection = MySQLdb.connect(dsn)
+            import re
+            cparams = dict(re.findall(r'(\S+)=(".*?"|\S+)', dsn))
+            print(cparams)
+            connection = MySQLdb.connect(**cparams)
         return connection
 
 
