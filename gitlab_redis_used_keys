@@ -1,0 +1,29 @@
+#!/usr/bin/env python
+
+# inspired by the redis munin plugin found at
+# http://munin-monitoring.org/browser/munin-contrib/plugins/redis/redis_,
+# written 2009 by Gleb Voronich <http://stanly.net.ua/>
+
+from lib import get_gitlab_instance
+import re
+import sys
+
+
+if len(sys.argv) >= 2 and sys.argv[1] == 'config':
+    print('graph_title Redis: Used keys')
+    print('graph_vlabel Used keys')
+    print('graph_category gitlab')
+    print('graph_args -l 0')
+    print('db0_keys.label db keys')
+    print('db0_expires.label db expires')
+    sys.exit(0)
+
+gitlab = get_gitlab_instance()
+redis_info = gitlab.get_redis_info()
+dbinfo = redis_info['db0']
+match = re.match('keys=(?P<keys>[0-9]+),expires=(?P<expires>[0-9]+),avg_ttl=(?P<avg_ttl>[0-9]+)', dbinfo)
+values = match.groupdict()
+
+print('db0_keys.value ' + values['keys'])
+print('db0_expires.value ' + values['expires'])
+

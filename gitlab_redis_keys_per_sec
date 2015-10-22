@@ -1,0 +1,32 @@
+#!/usr/bin/env python
+
+# inspired by the redis munin plugin found at
+# http://munin-monitoring.org/browser/munin-contrib/plugins/redis/redis_,
+# written 2009 by Gleb Voronich <http://stanly.net.ua/>
+
+from lib import get_gitlab_instance
+import sys
+
+
+if len(sys.argv) >= 2 and sys.argv[1] == 'config':
+    print('graph_title Redis: Keys Per Second')
+    print('graph_vlabel per ${graph_period}')
+    print('graph_category gitlab')
+    print('graph_args -l 0')
+    print('hits.label hits')
+    print('hits.type COUNTER')
+    print('misses.label misses')
+    print('misses.type COUNTER')
+    print('expired.label expirations')
+    print('expired.type COUNTER')
+    print('evictions.label evictions')
+    print('evictions.type COUNTER')
+    sys.exit(0)
+
+gitlab = get_gitlab_instance()
+redis_info = gitlab.get_redis_info()
+print('hits.value ' + redis_info['keyspace_hits'])
+print('misses.value ' + redis_info['keyspace_misses'])
+print('expired.value ' + redis_info['expired_keys'])
+print('evictions.value ' + redis_info['evicted_keys'])
+
