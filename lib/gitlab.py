@@ -19,11 +19,12 @@ class GitLabInstance(object):
 
     def get_db_connection(self):
         db_engine = os.environ.get('db_engine')
-        if db_engine == None:
+        if db_engine is None:
             db_engine = 'postgresql'
         dsn = os.environ.get('db_dsn')
-        if dsn == None:
+        if dsn is None:
             dsn = 'host=' + self.get_postgresql_dir() + ' user=gitlab dbname=gitlabhq_production'
+        connection = None
         if db_engine == 'postgresql':
             import psycopg2
             connection = psycopg2.connect(dsn)
@@ -36,8 +37,8 @@ class GitLabInstance(object):
         return connection
 
     def get_redis_connection(self):
-	socket_name = os.environ.get('redis_socket')
-        if socket_name == None:
+        socket_name = os.environ.get('redis_socket')
+        if socket_name is None:
             socket_name = '/var/opt/gitlab/redis/redis.socket'
         connection = socket.socket(socket.AF_UNIX, socket.SOCK_STREAM)
         try:
@@ -48,7 +49,7 @@ class GitLabInstance(object):
 
     def get_redis_info(self):
         redis = self.get_redis_connection()
-        if redis == None:
+        if redis is None:
             raise GitLabError('Redis connection not available')
         redis.send('INFO\r\n')
         data = redis.recv(16384)
@@ -68,7 +69,7 @@ class GitLabInstance(object):
 
     def get_redis_config(self, param):
         redis = self.get_redis_connection()
-        if redis == None:
+        if redis is None:
             raise GitLabError('Redis connection not available')
         redis.send('*3\r\n$6\r\nCONFIG\r\n$3\r\nGET\r\n$' + str(len(param)) + '\r\n' + param + '\r\n')
         data = redis.recv(16384)
