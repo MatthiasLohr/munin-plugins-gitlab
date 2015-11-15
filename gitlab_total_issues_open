@@ -16,7 +16,7 @@ if len(sys.argv) >= 2 and sys.argv[1] == 'config':
 gitlab = get_gitlab_instance()
 db = gitlab.get_db_connection()
 cursor = db.cursor()
-cursor.execute("SELECT COUNT(*) FROM gitlab.issues WHERE state = 'opened'")
+cursor.execute("SELECT COUNT(*) FROM issues WHERE state = 'opened'")
 count = cursor.fetchone()[0]
 cursor.close()
 db.close()
