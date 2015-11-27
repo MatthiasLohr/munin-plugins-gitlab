@@ -21,6 +21,7 @@ user git
 ## using a PostgreSQL database
 #env.db_engine postgresql          # optional, defaults to postgres, valid values: postgresql. mysql
 #env.db_dsn host=/var/opt/gitlab/postgresql user=gitlab dbname=gitlabhq_production  # optional, defaults to GitLab omnibus database
+#env.db_pg_search_path=gitlab     # optional, set search_path before executing any query. Useful if not using GitLab omnibus package
 
 ## using a MySQL database
 #env.db_engine mysql

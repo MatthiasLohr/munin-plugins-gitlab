@@ -28,6 +28,11 @@ class GitLabInstance(object):
         if db_engine == 'postgresql':
             import psycopg2
             connection = psycopg2.connect(dsn)
+            search_path = os.environ.get('db_pg_search_path')
+            if not search_path is None:
+                cursor = connection.cursor()
+                cursor.execute('SET search_path TO ' + search_path)
+                cursor.close()
         elif db_engine == 'mysql':
             import MySQLdb
             import re
