@@ -3,6 +3,13 @@ from lib import get_gitlab_instance
 
 import sys
 
+
+# Use gitlab-ci colours
+COLOR_MAPPING = {
+    'success': '26AB5D',
+    'failure': 'E82757',
+    'canceled': '7E8FA5',
+}
 SHOW_CONFIG = len(sys.argv) >= 2 and sys.argv[1] == 'config'
 
 if SHOW_CONFIG:
@@ -24,6 +31,9 @@ try:
         if SHOW_CONFIG:
             print('{0}.draw AREASTACK'.format(*row))
             print('{0}.label {0}'.format(*row))
+            print('{0}.color {color:s}'.format(
+                *row, color=COLOR_MAPPING.get(row[0], '000000')
+            ))
         else:
             print('{0}.value {1:d}'.format(*row))
 
