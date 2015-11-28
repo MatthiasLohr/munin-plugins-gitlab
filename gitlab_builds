@@ -25,7 +25,8 @@ try:
     cursor.execute(
         'SELECT status, COUNT(status) AS amount '
         'FROM ci_builds '
-        'GROUP BY status'
+        'GROUP BY status '
+        'ORDER BY status DESC'
     )
     for row in cursor.fetchall():
         if SHOW_CONFIG:
