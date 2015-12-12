@@ -5,39 +5,44 @@ import sys
 
 
 # Use gitlab-ci colours
-COLOUR_MAPPING = {
+BUILD_STATES = {
     'success': '26AB5D',
     'failed': 'E82757',
     'canceled': '7E8FA5',
+    'pending': 'E95D39',
+    'running': 'FF8000',
 }
 SHOW_CONFIG = len(sys.argv) >= 2 and sys.argv[1] == 'config'
 
 if SHOW_CONFIG:
     print('graph_title GitLab CI builds')
-    print('graph_vlabel builds')
+    print('graph_vlabel builds per ${graph_period}')
     print('graph_args -l 0')
     print('graph_category gitlab')
+    print('graph_order {0}'.format(' '.join(sorted(BUILD_STATES.keys()))))
+    for build_state in BUILD_STATES:
+        print('{0}.min 0\n{0}.draw AREA\n{0}.type DERIVE\n{0}.label {0}\n{0}.colour {1}'  # noqa
+              .format(build_state, BUILD_STATES[build_state]))
+else:
+    gitlab = get_gitlab_instance()
+    db = gitlab.get_db_connection()
 
-gitlab = get_gitlab_instance()
-db = gitlab.get_db_connection()
-try:
-    cursor = db.cursor()
-    cursor.execute(
-        'SELECT status, COUNT(status) AS amount '
-        'FROM ci_builds '
-        'GROUP BY status '
-        'ORDER BY status DESC'
-    )
-    for row in cursor.fetchall():
-        if SHOW_CONFIG:
-            print('{0}.draw AREASTACK'.format(*row))
-            print('{0}.label {0}'.format(*row))
-            print('{0}.colour {colour:s}'.format(
-                *row, colour=COLOUR_MAPPING.get(row[0], '000000')
-            ))
-        else:
-            print('{0}.value {1:d}'.format(*row))
+    # python <2.7 compat, no {build_state: 0 for build_state in BUILD_STATES}
+    states = dict([(build_state, 0) for build_state in BUILD_STATES])
+    try:
+        cursor = db.cursor()
+        cursor.execute(
+            'SELECT status, COUNT(status) AS amount '
+            'FROM ci_builds '
+            'GROUP BY status '
+            'ORDER BY status DESC'
+        )
+        for state, value in cursor.fetchall():
+            states.update({state: value})
 
-    cursor.close()
-finally:
-    db.close()
+        cursor.close()
+    finally:
+        db.close()
+
+    for build_state, build_amount in states.items():
+        print('{0}.value {1:d}'.format(build_state, build_amount))
