@@ -21,7 +21,7 @@ if SHOW_CONFIG:
     print('graph_category gitlab')
     print('graph_order {0}'.format(' '.join(sorted(BUILD_STATES.keys()))))
     for build_state in BUILD_STATES:
-        print('{0}.min 0\n{0}.draw AREA\n{0}.type DERIVE\n{0}.label {0}\n{0}.colour {1}'  # noqa
+        print('{0}.min 0\n{0}.draw AREASTACK\n{0}.type DERIVE\n{0}.label {0}\n{0}.colour {1}'  # noqa
               .format(build_state, BUILD_STATES[build_state]))
 else:
     gitlab = get_gitlab_instance()
