@@ -12,6 +12,7 @@ if SHOW_CONFIG:
     print('graph_vlabel users')
     print('graph_args -l 0')
     print('graph_category gitlab')
+    print('graph_order {0}'.format(' '.join(USER_STATES)))
     for user_state in USER_STATES:
         print('{0}.draw AREASTACK'.format(user_state))
         print('{0}.label {0} user count'.format(user_state))
