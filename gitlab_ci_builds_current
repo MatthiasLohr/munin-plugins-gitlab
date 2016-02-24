@@ -10,8 +10,10 @@ if len(sys.argv) >= 2 and sys.argv[1] == 'config':
     print('graph_category gitlab')
     print('pending.label pending builds')
     print('pending.draw AREA')
+    print('pending.colour FFFF00')
     print('running.label running builds')
     print('running.draw STACK')
+    print('running.colour 00FF00')
     sys.exit(0)
 
 gitlab = get_gitlab_instance()
