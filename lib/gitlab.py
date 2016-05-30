@@ -21,6 +21,9 @@ class GitLabInstance(object):
     def get_cache_dir(self):
         return os.path.join(self.shared_dir, 'cache')
 
+    def get_registry_dir(self):
+        return os.path.join(self.shared_dir, 'registry')
+
     def get_repository_dir(self):
         return os.path.join(self.get_data_dir(), 'repositories')
 

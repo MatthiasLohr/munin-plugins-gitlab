@@ -30,6 +30,9 @@ user git
 [gitlab_redis_*]
 user gitlab-redis
 #env.redis_socket /var/opt/gitlab/redis/redis.socket  # optional, defaults to GitLab omnibus redis instance
+
+[gitlab_total_registry_size]
+user registry
 ```
 2. Change your directory to ```/etc/munin/plugins```. Create symlinks for each plugin (```ln -s```) which you want to
 activate. Please take a look at the plugin specific documentation.
