@@ -1,0 +1,27 @@
+#!/usr/bin/env python
+from lib import dirsize
+from lib import get_gitlab_instance
+import sys
+
+
+gitlab = get_gitlab_instance()
+artifacts_root = gitlab.get_artifacts_dir()
+
+if len(sys.argv) >= 2 and sys.argv[1] == 'config':
+    print('graph_title GitLab build artifacts disk usage')
+    print('graph_vlabel build artifacts disk usage')
+    print('graph_args -l 0 --base 1024')
+    print('graph_category gitlab')
+    print('artifacts_size.label build artifacts')
+    print('artifacts_size.draw AREA')
+    sys.exit(0)
+
+artifacts_size = 0
+
+try:
+    artifacts_size = dirsize(artifacts_root)
+except OSError as e:
+    print(e)
+    sys.exit(1)
+
+print('artifacts_size.value ' + str(artifacts_size))

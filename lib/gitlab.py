@@ -11,6 +11,19 @@ class GitLabInstance(object):
     def get_data_dir(self):
         return os.path.join(self.gitlab_dir, 'git-data')
 
+    @property
+    def shared_dir(self):
+        return os.path.join(self.gitlab_dir, 'gitlab-rails', 'shared')
+
+    def get_artifacts_dir(self):
+        return os.path.join(self.shared_dir, 'artifacts')
+
+    def get_cache_dir(self):
+        return os.path.join(self.shared_dir, 'cache')
+
+    def get_registry_dir(self):
+        return os.path.join(self.shared_dir, 'registry')
+
     def get_repository_dir(self):
         return os.path.join(self.get_data_dir(), 'repositories')
 
