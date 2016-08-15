@@ -1,0 +1,40 @@
+#!/usr/bin/env python
+from lib import get_gitlab_instance
+
+import sys
+
+
+SHOW_CONFIG = len(sys.argv) >= 2 and sys.argv[1] == 'config'
+DAYS = (1, 7, 14, 30, 365)  # sorted and iterable
+
+if SHOW_CONFIG:
+    print('graph_title GitLab active users')
+    print('graph_vlabel active users')
+    print('graph_args -l 0')
+    print('graph_category gitlab')
+    print('graph_order {0}'.format(' '.join(map(str, DAYS))))
+    for day in DAYS:
+        print('d{0}.draw LINE'.format(day))
+        print('d{0}.label {0}-day active users'.format(day))
+else:
+    gitlab = get_gitlab_instance()
+    db = gitlab.get_db_connection()
+
+    # python <2.7 compat, no {day: 0 for day in DAYS}
+    days = dict([(day, 0) for day in DAYS])
+    try:
+        for day in DAYS:
+            cursor = db.cursor()
+            cursor.execute(
+                "SELECT COUNT(last_sign_in_at) "
+                "FROM users "
+                "WHERE last_sign_in_at > CURRENT_TIMESTAMP - INTERVAL '%s day' ",
+                (day,)
+            )
+            days.update({day: cursor.fetchone()[0]})
+            cursor.close()
+    finally:
+        db.close()
+
+    for user_day, user_amount in days.items():
+        print('d{0:d}.value {1:d}'.format(user_day, user_amount))
