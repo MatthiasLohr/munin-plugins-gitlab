@@ -1,0 +1,39 @@
+#!/usr/bin/env python
+
+from lib import get_gitlab_instance
+import sys
+
+
+if len(sys.argv) >= 2 and sys.argv[1] == 'config':
+    print('graph_title GitLab Merge Request throughput')
+    print('graph_vlabel Merge Requests / s')
+    print('graph_args -l 0')
+    print('graph_category gitlab')
+    print('count_opened.label opened merge requests')
+    print('count_opened.type DERIVE')
+    print('count_opened.draw AREA')
+    print('count_opened.colour 00FF00')
+    print('count_merged.label merged merge requests')
+    print('count_merged.type DERIVE')
+    print('count_merged.draw STACK')
+    print('count_merged.colour FF0000')
+    sys.exit(0)
+
+gitlab = get_gitlab_instance()
+db = gitlab.get_db_connection()
+
+cursor = db.cursor()
+cursor.execute("SELECT COUNT(*) FROM merge_requests")
+count_opened = cursor.fetchone()[0]
+cursor.close()
+
+cursor = db.cursor()
+cursor.execute("SELECT COUNT(*) FROM merge_requests WHERE state = 'merged'")
+count_merged = cursor.fetchone()[0]
+cursor.close
+
+db.close()
+
+print('count_opened.value ' + str(count_opened))
+print('count_merged.value ' + str(count_merged))
+
