@@ -11,30 +11,35 @@ support for occuring bugs or errors.
 
 ## Setup ##
 
-1. Clone this repository to your GitLab server. Create a new file called ```gitlab``` in ```/etc/munin/plugin-conf.d```
+1. Install dependencies depending on your distribution:
+  * Ubuntu
+  ```
+  sudo apt-get install python-psycopg2
+  ```
+2. Clone this repository to your GitLab server. Create a new file called ```gitlab``` in ```/etc/munin/plugin-conf.d```
 and copy+paste the following lines:
-```
-[gitlab_*]
-user git
-#env.gitlab_dir /var/opt/gitlab    # optional, defaults to GitLab omnibus package setup directory
-
-## using a PostgreSQL database
-#env.db_engine postgresql          # optional, defaults to postgres, valid values: postgresql. mysql
-#env.db_dsn host=/var/opt/gitlab/postgresql user=gitlab dbname=gitlabhq_production  # optional, defaults to GitLab omnibus database
-#env.db_pg_search_path gitlab     # optional, set search_path before executing any query. Useful if not using GitLab omnibus package
-
-## using a MySQL database
-#env.db_engine mysql
-#env.db_dsn host=localhost user=gitlab db=gitlabhq_production
-
-[gitlab_redis_*]
-user gitlab-redis
-#env.redis_socket /var/opt/gitlab/redis/redis.socket  # optional, defaults to GitLab omnibus redis instance
-
-[gitlab_total_registry_size]
-user registry
-```
-2. Change your directory to ```/etc/munin/plugins```. Create symlinks for each plugin (```ln -s```) which you want to
+  ```
+  [gitlab_*]
+  user git
+  #env.gitlab_dir /var/opt/gitlab    # optional, defaults to GitLab omnibus package setup directory
+   
+  ## using a PostgreSQL database
+  #env.db_engine postgresql          # optional, defaults to postgres, valid values: postgresql. mysql
+  #env.db_dsn host=/var/opt/gitlab/postgresql user=gitlab dbname=gitlabhq_production  # optional, defaults to GitLab omnibus database
+  #env.db_pg_search_path gitlab     # optional, set search_path before executing any query. Useful if not using GitLab omnibus package
+    
+  ## using a MySQL database
+  #env.db_engine mysql
+  #env.db_dsn host=localhost user=gitlab db=gitlabhq_production
+    
+  [gitlab_redis_*]
+  user gitlab-redis
+  #env.redis_socket /var/opt/gitlab/redis/redis.socket  # optional, defaults to GitLab omnibus redis instance
+    
+  [gitlab_total_registry_size]
+  user registry
+  ```
+3. Change your directory to ```/etc/munin/plugins```. Create symlinks for each plugin (```ln -s```) which you want to
 activate. Please take a look at the plugin specific documentation.
 
 
