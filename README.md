@@ -13,9 +13,9 @@ support for occuring bugs or errors.
 
 1. Install dependencies depending on your distribution:
   * Ubuntu
-  ```
-  sudo apt-get install python-psycopg2
-  ```
+    ```
+    sudo apt-get install python-psycopg2
+    ```
 2. Clone this repository to your GitLab server. Create a new file called ```gitlab``` in ```/etc/munin/plugin-conf.d```
 and copy+paste the following lines:
   ```
