@@ -13,7 +13,11 @@ def calc_sizes(startpath):
     repos = {}
     groups = {}
     total = 0
-    for group in os.listdir(os.path.join(startpath, 'repositories')):
+    try:
+        groups = os.listdir(os.path.join(startpath, 'repositories'))
+    except OSError:
+        groups = []
+    for group in groups:
         group_size = 0
         for user in os.listdir(os.path.join(startpath, 'repositories', group)):
 
