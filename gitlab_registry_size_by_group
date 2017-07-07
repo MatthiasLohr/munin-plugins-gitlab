@@ -1,0 +1,76 @@
+#!/usr/bin/env python
+
+from lib import get_gitlab_instance
+import os
+import sys
+
+gitlab = get_gitlab_instance()
+registry_root = os.path.join(gitlab.get_registry_dir(), 'docker', 'registry',
+                             'v2')
+
+
+def calc_sizes(startpath):
+    repos = {}
+    groups = {}
+    total = 0
+    try:
+        groups = os.listdir(os.path.join(startpath, 'repositories'))
+    except OSError:
+        groups = []
+    for group in groups:
+        group_size = 0
+        for user in os.listdir(os.path.join(startpath, 'repositories', group)):
+
+            def user_listdir(*paths):
+                path = os.path.join(startpath, 'repositories', group, user,
+                                    *paths)
+                if os.path.exists(path):
+                    return os.listdir(path)
+                else:
+                    return []
+
+            size = 0
+            shadirs = user_listdir('_layers', 'sha256')
+            shadirs += user_listdir('_manifests', 'revisions', 'sha256')
+            shadirs += user_listdir('_manifests', 'tags', 'sha256')
+            for shadir in shadirs:
+                file_path = os.path.join(
+                    startpath,
+                    'blobs',
+                    'sha256',
+                    shadir[:2],
+                    shadir,
+                    'data', )
+                try:
+                    size += os.path.getsize(file_path)
+                except OSError, e:
+                    pass
+            total += size
+            group_size += size
+        if group_size:
+            groups[group.replace('.', '_')] = group_size
+    return groups
+
+groups = calc_sizes(registry_root)
+sorted_group_keys = sorted(groups, key=groups.get, reverse=True)
+
+if len(sys.argv) >= 2 and sys.argv[1] == 'config':
+    print('graph_title GitLab Registry disk usage by group')
+    print('graph_vlabel Registry disk usage')
+    print('graph_args -l 0 --base 1024')
+    print('graph_category gitlab')
+    for count, group_name in enumerate(sorted_group_keys):
+        print('repo_group_size_{0}.label {0} Repositories'.format(group_name))
+        if count == 0:
+            print('repo_group_size_{}.draw AREA'.format(group_name))
+        else:
+            print('repo_group_size_{}.draw STACK'.format(group_name))
+    sys.exit(0)
+
+try:
+    for group_name in sorted_group_keys:
+        size = groups[group_name]
+        print('repo_group_size_{}.value {}'.format(group_name, size))
+except OSError as e:
+    print(e)
+    sys.exit(1)
