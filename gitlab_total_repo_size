@@ -25,9 +25,12 @@ wiki_size = 0
 try:
     namespaces = os.listdir(repository_root)
     for namespace in namespaces:
-        repos = os.listdir(repository_root + '/' + namespace)
+        subdir = repository_root + os.sep + namespace
+        if os.path.isfile(subdir):
+            continue
+        repos = os.listdir(subdir)
         for repo in repos:
-            repo_path = repository_root + '/' + namespace + '/' + repo
+            repo_path = subdir + os.sep + repo
             if repo.endswith('.wiki.git'):
                 wiki_size += dirsize(repo_path)
             elif repo.endswith('.git'):
