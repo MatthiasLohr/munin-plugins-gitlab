@@ -24,7 +24,10 @@ wiki_count = 0
 try:
     namespaces = os.listdir(repository_root)
     for namespace in namespaces:
-        repos = os.listdir(repository_root + '/' + namespace)
+        subdir = repository_root + os.sep + namespace
+        if os.path.isfile(subdir):
+            continue
+        repos = os.listdir(subdir)
         for repo in repos:
             if repo.endswith('.wiki.git'):
                 wiki_count += 1
