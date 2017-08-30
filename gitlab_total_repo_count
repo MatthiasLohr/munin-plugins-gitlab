@@ -16,10 +16,13 @@ if len(sys.argv) >= 2 and sys.argv[1] == 'config':
     print('repo_count.draw AREA')
     print('wiki_count.label Wiki Count')
     print('wiki_count.draw STACK')
+    print('wiki_empty_count.label Empty Wiki Count')
+    print('wiki_empty_count.draw STACK')
     sys.exit(0)
 
 repo_count = 0
 wiki_count = 0
+wiki_empty_count = 0
 
 try:
     namespaces = os.listdir(repository_root)
@@ -30,7 +33,13 @@ try:
         repos = os.listdir(subdir)
         for repo in repos:
             if repo.endswith('.wiki.git'):
-                wiki_count += 1
+                try:
+                    if os.listdir(subdir + os.sep + repo + '/objects/pack'):
+                        wiki_count += 1
+                    else:
+                        wiki_empty_count += 1
+                except OSError:
+                    wiki_empty_count += 1
             elif repo.endswith('.git'):
                 repo_count += 1
 except OSError as e:
@@ -39,3 +48,4 @@ except OSError as e:
 
 print('repo_count.value ' + str(repo_count))
 print('wiki_count.value ' + str(wiki_count))
+print('wiki_empty_count.value ' + str(wiki_empty_count))
