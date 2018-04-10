@@ -21,12 +21,12 @@ gitlab = get_gitlab_instance()
 db = gitlab.get_db_connection()
 
 cursor = db.cursor()
-cursor.execute("SELECT COUNT(*) FROM issues WHERE state IN ('opened', 'reopened') AND deleted_at IS NULL AND assignee_id IS NULL")
+cursor.execute("SELECT COUNT(*) FROM issues i LEFT JOIN issue_assignees ia ON i.id = ia.issue_id WHERE i.state IN ('opened', 'reopened') AND ia.user_id IS NULL")
 unassigned = cursor.fetchone()[0]
 cursor.close()
 
 cursor = db.cursor()
-cursor.execute("SELECT COUNT(*) FROM issues WHERE state IN ('opened', 'reopened') AND deleted_at IS NULL AND assignee_id IS NOT NULL")
+cursor.execute("SELECT COUNT(*) FROM issues i LEFT JOIN issue_assignees ia ON i.id = ia.issue_id WHERE i.state IN ('opened', 'reopened') AND ia.user_id IS NOT NULL")
 assigned = cursor.fetchone()[0]
 cursor.close()
 
