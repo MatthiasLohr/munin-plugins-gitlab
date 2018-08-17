@@ -47,7 +47,6 @@ class GitLabInstance(object):
             import MySQLdb
             import re
             cparams = dict(re.findall(r'(\S+)=(".*?"|\S+)', dsn))
-            print(cparams)
             connection = MySQLdb.connect(**cparams)
         return connection
 
