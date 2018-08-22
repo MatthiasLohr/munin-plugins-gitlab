@@ -18,6 +18,7 @@ cursor = db.cursor()
 cursor.execute(
     "SELECT username, COUNT(username) AS count FROM todos"
     " JOIN users ON users.id = todos.user_id WHERE todos.state != 'done'"
+    " AND users.state = 'active'"
     " GROUP BY username ORDER BY count DESC")
 
 for row in cursor.fetchall():

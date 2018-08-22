@@ -9,7 +9,10 @@ class GitLabInstance(object):
         self.gitlab_dir = gitlab_dir
 
     def get_data_dir(self):
-        return os.path.join(self.gitlab_dir, 'git-data')
+        data_dir = os.environ.get('gitlab_data_dir')
+        if data_dir is None:
+            data_dir = os.path.join(self.gitlab_dir, 'git-data')
+        return data_dir
 
     @property
     def shared_dir(self):
@@ -47,7 +50,6 @@ class GitLabInstance(object):
             import MySQLdb
             import re
             cparams = dict(re.findall(r'(\S+)=(".*?"|\S+)', dsn))
-            print(cparams)
             connection = MySQLdb.connect(**cparams)
         return connection
 
