@@ -28,7 +28,7 @@ count_opened = cursor.fetchone()[0]
 cursor.close()
 
 cursor = db.cursor()
-cursor.execute("SELECT COUNT(*) FROM merge_requests WHERE state = 'merged'")
+cursor.execute("SELECT COUNT(*) FROM merge_requests WHERE state_id = 3")
 count_merged = cursor.fetchone()[0]
 cursor.close
 

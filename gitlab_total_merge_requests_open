@@ -16,7 +16,7 @@ if len(sys.argv) >= 2 and sys.argv[1] == 'config':
 gitlab = get_gitlab_instance()
 db = gitlab.get_db_connection()
 cursor = db.cursor()
-cursor.execute("SELECT COUNT(*) FROM merge_requests WHERE state IN ('opened', 'reopened', 'locked')")
+cursor.execute("SELECT COUNT(*) FROM merge_requests WHERE state_id = 1")
 count = cursor.fetchone()[0]
 cursor.close()
 db.close()

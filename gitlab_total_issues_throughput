@@ -28,7 +28,7 @@ count_opened = cursor.fetchone()[0]
 cursor.close()
 
 cursor = db.cursor()
-cursor.execute("SELECT COUNT(*) FROM issues WHERE state = 'closed'")
+cursor.execute("SELECT COUNT(*) FROM issues WHERE state_id = 2")
 count_closed = cursor.fetchone()[0]
 cursor.close
 
