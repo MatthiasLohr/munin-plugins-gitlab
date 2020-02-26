@@ -27,7 +27,7 @@ for row in cursor.fetchall():
     username = row[0].replace('.', '_')
     if SHOW_CONFIG:
         print('{0}.draw LINE'.format(username))
-        print("{0}.label {1}'s ToDos".format(username, row[0]))
+        print("{0}.label {1}'s issues".format(username, row[0]))
     else:
         print('{0}.value {1:d}'.format(username, row[1]))
 
