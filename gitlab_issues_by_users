@@ -1,0 +1,35 @@
+#!/usr/bin/env python
+
+from lib import get_gitlab_instance
+import sys
+
+SHOW_CONFIG = len(sys.argv) >= 2 and sys.argv[1] == 'config'
+
+gitlab = get_gitlab_instance()
+db = gitlab.get_db_connection()
+
+if SHOW_CONFIG:
+    print('graph_title GitLab open issues by users')
+    print('graph_vlabel Issues')
+    print('graph_args -l 0')
+    print('graph_category gitlab')
+
+cursor = db.cursor()
+cursor.execute(
+    "SELECT username, COUNT(username) AS count FROM "
+    "issues i, issue_assignees ia, users u, projects p WHERE "
+    "u.id = ia.user_id AND ia.issue_id = i.id AND "
+    "i.state_id = 1 AND i.project_id = p.id AND "
+    "p.archived = FALSE GROUP BY username ORDER BY "
+    "count DESC")
+
+for row in cursor.fetchall():
+    username = row[0].replace('.', '_')
+    if SHOW_CONFIG:
+        print('{0}.draw LINE'.format(username))
+        print("{0}.label {1}'s issues".format(username, row[0]))
+    else:
+        print('{0}.value {1:d}'.format(username, row[1]))
+
+cursor.close()
+db.close()
