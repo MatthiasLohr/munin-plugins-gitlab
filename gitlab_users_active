@@ -28,7 +28,7 @@ else:
             cursor.execute(
                 "SELECT COUNT(last_sign_in_at) "
                 "FROM users "
-                "WHERE last_sign_in_at > CURRENT_TIMESTAMP - INTERVAL %s day ",
+                "WHERE last_sign_in_at > CURRENT_TIMESTAMP - INTERVAL '%s day' ",
                 (day,)
             )
             days.update({day: cursor.fetchone()[0]})
