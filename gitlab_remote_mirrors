@@ -1,0 +1,39 @@
+#!/usr/bin/env python
+
+from lib import get_gitlab_instance, munin_safe_id
+import sys
+
+SHOW_CONFIG = len(sys.argv) >= 2 and sys.argv[1] == 'config'
+
+gitlab = get_gitlab_instance()
+db = gitlab.get_db_connection()
+
+if SHOW_CONFIG:
+    print('graph_title GitLab remote mirror status')
+    print('graph_vlabel # of mirrors')
+    print('graph_args -l 0')
+    print('graph_category gitlab')
+
+cursor = db.cursor()
+cursor.execute(
+    "SELECT n.path, p.path, rm.update_status, COUNT(rm.id) as count "
+    "FROM remote_mirrors rm, projects p, namespaces n "
+    "WHERE p.id = rm.project_id AND n.id = p.namespace_id AND p.archived=false "
+    "GROUP BY n.path, p.path, rm.update_status "
+    "ORDER BY n.path, p.path, rm.update_status ASC")
+
+for row in cursor.fetchall():
+    group = munin_safe_id(row[0])
+    project = munin_safe_id(row[1])
+    update_status = munin_safe_id(row[2])
+    count = row[3]
+    if SHOW_CONFIG:
+        print('{0}_{1}_{2}.draw LINE'.format(group, project, update_status))
+        print('{0}_{1}_{2}.label {3}/{4} {5} mirrors'.format(group, project, update_status, row[0], row[1], row[2]))
+        if update_status in ['to_retry']:
+            print('{0}_{1}_{2}.warning 0:0'.format(group, project, update_status))
+    else:
+        print('{0}_{1}_{2}.value {3:d}'.format(group, project, update_status, count))
+
+cursor.close()
+db.close()
