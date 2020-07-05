@@ -1,0 +1,88 @@
+#!/usr/bin/env python
+
+from lib import get_gitlab_instance, munin_safe_id
+import sys
+
+SHOW_CONFIG = len(sys.argv) >= 2 and sys.argv[1] == 'config'
+
+gitlab = get_gitlab_instance()
+db = gitlab.get_db_connection()
+
+if SHOW_CONFIG:
+    print('graph_title GitLab remote mirror status')
+    print('graph_vlabel # of mirrors')
+    print('graph_args -l 0')
+    print('graph_category gitlab')
+
+cursor = db.cursor()
+cursor.execute(
+    "SELECT n.path, p.path, rm.update_status, COUNT(rm.id) as count "
+    "FROM remote_mirrors rm, projects p, namespaces n "
+    "WHERE p.id = rm.project_id AND n.id = p.namespace_id AND p.archived=false "
+    "GROUP BY n.path, p.path, rm.update_status "
+    "ORDER BY n.path, p.path, rm.update_status ASC")
+
+def print_row(row):
+    group = munin_safe_id(row[0])
+    project = munin_safe_id(row[1])
+    update_status = munin_safe_id(row[2])
+    count = row[3]
+    if SHOW_CONFIG:
+        print('{0}_{1}_{2}.label {3}/{4} {5}'.format(group, project, update_status, row[0], row[1], row[2]))
+        if update_status in ['to_retry']:
+            print('{0}_{1}_{2}.warning 0:0'.format(group, project, update_status))
+            print('{0}_{1}_{2}.draw LINESTACK1'.format(group, project, update_status))
+        elif update_status in ['finished']:
+            print('{0}_{1}_{2}.draw LINESTACK1'.format(group, project, update_status))
+            pass
+    else:
+        print('{0}_{1}_{2}.value {3:d}'.format(group, project, update_status, count))
+
+def same_project(row1, row2):
+    return len(row1) > 1 and len(row2) > 1 and row1[0] == row2[0] and row1[1] == row2[1]
+
+def copy_row(row, overwrite_colums={}):
+    return tuple(
+        overwrite_columns[i] if i in overwrite_columns else
+        'to_retry' if i == 2 else
+        last_row[i]
+        for i in range(0,len(last_row))
+    )
+
+
+last_row = ()
+for row in cursor.fetchall():
+    if last_row and not same_project(row, last_row):
+        if last_row[2] != 'to_retry':
+        # print to_retry row even if there is no to_retry mirror for this project
+            to_retry_row = tuple(
+                0 if i == 3 else 
+                'to_retry' if i == 2 else
+                last_row[i]
+                for i in range(0,len(last_row))
+            )
+            print_row(to_retry_row)
+    if row[2] == last_row[2] == 'to_retry':
+            # print finshed row event if there is not finished mirror for this project
+            finished_row = tuple(
+                0 if i == 3 else
+                'finished' if i == 2 else
+                row[i]
+                for i in range(0,len(row))
+            )
+            print_row(finished_row)
+    print_row(row)
+    last_row = row
+
+if last_row and last_row[2] == 'finished':
+    # print to_retry row even if there is no to_retry mirror for this project
+    to_retry_row = tuple(
+        0 if i == 3 else
+        'to_retry' if i == 2 else
+        last_row[i]
+        for i in range(0,len(last_row))
+    )
+    print_row(to_retry_row)
+
+cursor.close()
+db.close()
