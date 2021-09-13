@@ -3,10 +3,10 @@
 from lib import get_gitlab_instance
 import os
 import sys
+import glob
 
 gitlab = get_gitlab_instance()
 repository_root = gitlab.get_repository_dir()
-
 if len(sys.argv) >= 2 and sys.argv[1] == 'config':
     print('graph_title GitLab Repository Count')
     print('graph_vlabel Repository Count')
@@ -26,11 +26,16 @@ wiki_empty_count = 0
 
 try:
     namespaces = os.listdir(repository_root)
+    if '@hashed' in namespaces:
+	repository_root = os.path.join(repository_root, '@hashed')
+        namespaces = os.listdir(repository_root)
     for namespace in namespaces:
-        subdir = repository_root + os.sep + namespace
+        subdir = os.path.join(repository_root, namespace)
         if os.path.isfile(subdir):
             continue
-        repos = os.listdir(subdir)
+        repos = glob.glob(os.path.join(subdir, '*', '*.git'))
+	if not repos:
+            repos = os.listdir(subdir)
         for repo in repos:
             if repo.endswith('.wiki.git'):
                 try:
