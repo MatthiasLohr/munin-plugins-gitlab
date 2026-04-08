@@ -27,13 +27,13 @@ try:
     namespaces = os.listdir(repository_root)
     if '@hashed' in namespaces:
         repository_root = os.path.join(repository_root, '@hashed')
-	namespaces = os.listdir(repository_root)
+        namespaces = os.listdir(repository_root)
     for namespace in namespaces:
         subdir = os.path.join(repository_root, namespace)
         if os.path.isfile(subdir):
             continue
-	repos = glob.glob(os.path.join(subdir, '*', '*.git'))
-	if not repos:
+        repos = glob.glob(os.path.join(subdir, '*', '*.git'))
+        if not repos:
             repos = os.listdir(subdir)
         for repo in repos:
             repo_path = os.path.join(subdir, repo)
