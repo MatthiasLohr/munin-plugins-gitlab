@@ -68,8 +68,9 @@ class GitLabInstance(object):
         redis = self.get_redis_connection()
         if redis is None:
             raise GitLabError('Redis connection not available')
-        redis.send('INFO\r\n')
-        data = redis.recv(16384)
+        data = 'INFO\r\n'
+        redis.send(data.encode('ascii'))
+        data = redis.recv(16384).decode('ascii')
         redis.close()
         info = {}
         for line in data.split('\n'):
@@ -88,8 +89,9 @@ class GitLabInstance(object):
         redis = self.get_redis_connection()
         if redis is None:
             raise GitLabError('Redis connection not available')
-        redis.send('*3\r\n$6\r\nCONFIG\r\n$3\r\nGET\r\n$' + str(len(param)) + '\r\n' + param + '\r\n')
-        data = redis.recv(16384)
+        data = '*3\r\n$6\r\nCONFIG\r\n$3\r\nGET\r\n$' + str(len(param)) + '\r\n' + param + '\r\n'
+        redis.send(data.encode('ascii'))
+        data = redis.recv(16384).decode('ascii')
         redis.close()
         values = []
         for line in data.split('\n'):
