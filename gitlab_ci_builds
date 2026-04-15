@@ -26,6 +26,6 @@ gitlab = get_gitlab_instance()
 db = gitlab.get_db_connection()
 for state in ('success', 'failed', 'canceled'):
     cursor = db.cursor()
-    cursor.execute("SELECT COUNT(*) FROM ci_builds WHERE status = '{state}'".format(state=state))
+    cursor.execute("SELECT COUNT(*) FROM p_ci_builds WHERE status = '{state}'".format(state=state))
     print('{state}.value {value}'.format(state=state, value=cursor.fetchone()[0]))
 
