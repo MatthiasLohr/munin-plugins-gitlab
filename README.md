@@ -6,7 +6,7 @@ This is a collection of plugins for monitoring your [GitLab](https://about.gitla
 
 These plugins are developed for and tested with GitLab versions >= 18.10.0.
 Maybe some plugins may work with older GitLab instances, but there's no
-support for occuring bugs or errors.
+support for occurring bugs or errors.
 
 
 ## Setup ##
@@ -22,20 +22,20 @@ and copy+paste the following lines:
   [gitlab_*]
   user git
   #env.gitlab_dir /var/opt/gitlab    # optional, defaults to GitLab omnibus package setup directory
-   
+
   ## using a PostgreSQL database
   #env.db_engine postgresql          # optional, defaults to postgres, valid values: postgresql. mysql
   #env.db_dsn host=/var/opt/gitlab/postgresql user=gitlab dbname=gitlabhq_production  # optional, defaults to GitLab omnibus database
   #env.db_pg_search_path gitlab     # optional, set search_path before executing any query. Useful if not using GitLab omnibus package
-    
+
   ## using a MySQL database
   #env.db_engine mysql
   #env.db_dsn host=localhost user=gitlab db=gitlabhq_production
-    
+
   [gitlab_redis_*]
   user gitlab-redis
   #env.redis_socket /var/opt/gitlab/redis/redis.socket  # optional, defaults to GitLab omnibus redis instance
-    
+
   [gitlab_total_registry_size]
   user registry
   ```
@@ -96,7 +96,7 @@ Afterwards links to the postgres munin plugins can be created. Here an example:
 ```
 sudo ln -s /usr/share/munin/plugins/postgres_users /etc/munin/plugins
 ```
-or by using the suggestion of munin to disaply possible links: 
+or by using the suggestion of munin to display possible links:
 ```
 sudo munin-node-configure --suggest --shell
 ```
