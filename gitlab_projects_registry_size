@@ -1,0 +1,55 @@
+#!/usr/bin/env python
+from lib import dirsize
+from lib import get_gitlab_instance
+import sys
+import glob
+import os
+
+gitlab = get_gitlab_instance()
+registry_root = gitlab.get_registry_dir()
+docker_registry_root = os.path.join(registry_root, 'docker/registry/v2')
+projects = {'_'.join(project.split('/')[-2:]): project
+            for project in glob.glob(os.path.join(docker_registry_root, 'repositories/*/*'))}
+
+if len(sys.argv) >= 2 and sys.argv[1] == 'config':
+    print('graph_title GitLab docker registry disk usage per project')
+    print('graph_vlabel disk usage [B]')
+    print('graph_args -l 0 --base 1024')
+    print('graph_category gitlab')
+    first = True
+    for project_name in projects:
+        print('%s_registry_size.label %s' % (project_name, '/'.join(projects[project_name].split('/')[-2:])))
+        if first:
+                print('%s_registry_size.draw AREA' % project_name)
+                first = False
+        else:
+                print('%s_registry_size.draw STACK' % project_name)
+    print('registry_size.label total')
+    print('registry_size.draw LINE')
+    sys.exit(0)
+
+registry_size = 0
+project_name = ''
+total = 0
+
+
+def _compute_blob_size(project_dir):
+    blob_shas = [layer.split('/')[-1] for layer in glob.glob(os.path.join(project_dir, '*'))]
+    blob_shas_with_prefix = [(sha[:2], sha) for sha in blob_shas]
+    blob_paths = [os.path.join(docker_registry_root, 'blobs/sha256', sha[0], sha[1]) for sha in blob_shas_with_prefix]
+    return sum(dirsize(path) for path in blob_paths if os.path.exists(path))
+
+
+try:
+    for project_name in projects:
+        project = projects[project_name]
+        base_size = dirsize(project)
+        layer_size = _compute_blob_size(os.path.join(project, '_layers/sha256'))
+        index_size = _compute_blob_size(os.path.join(project, '_manifests/index/sha256'))
+        print('%s_registry_size.value %s' % (project_name, base_size + layer_size + index_size))
+        total = total + base_size + layer_size
+    print('registry_size.value %s' % total)
+except OSError as e:
+    print('in %s' % project_name)
+    print(e)
+    sys.exit(1)
